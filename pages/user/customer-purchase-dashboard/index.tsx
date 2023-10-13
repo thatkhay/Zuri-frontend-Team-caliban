@@ -36,7 +36,6 @@ export type PurchaseData = {
       "status": string
     }
 };
-
 const DUMMYDATA: PurchaseData[] = [
   {
     "id": 7,
