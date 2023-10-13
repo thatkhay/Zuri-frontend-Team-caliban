@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from '@ui/Button';
 import { Input } from '@ui/Input';
 import { ArrowRight2 } from 'iconsax-react';
@@ -91,7 +91,7 @@ const MyPage: React.FC = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [filter, setFilter] = useState<string | null>(null);
-  const [data, setData] = useState<PurchaseData[]>(DUMMYDATA)
+  const [data, setData] = useState<PurchaseData[]>([])
   // search state
   const [searchInput, setSearchInput] = useState<string>("");
 
@@ -107,13 +107,13 @@ const MyPage: React.FC = () => {
   // Calculate counts for each category
   const allPurchasesCount = data.length;
   const pendingPurchasesCount = data.filter((item) => item.order?.status.toLowerCase() === 'pending').length;
-  const completedPurchasesCount = data.filter((item) => item.order?.status.toLowerCase() === 'successful').length;
+  const completedPurchasesCount = data.filter((item) => item.order?.status.toLowerCase() === 'completed').length;
   const failedPurchasesCount = data.filter((item) => item.order?.status.toLowerCase() === 'cancelled').length;
 
   // Function to determine the background color based on status
   const getStatusBackgroundColor = (status: string): string[] => {
     switch (status.toLowerCase()) {
-      case 'successful':
+      case 'completed':
         return ['bg-custom-color41', 'text-custom-color35']; // Return an array of background and text colors
       case 'pending':
         return ['bg-custom-color40', 'text-yellow-600'];
@@ -123,6 +123,31 @@ const MyPage: React.FC = () => {
         return ['bg-gray-200', 'text-gray-600'];
     }
   };
+
+  useEffect(() => {
+      async function fetchData(){
+        await getAllPurchase();
+      }
+
+      fetchData();
+  }, [])
+  
+  const getAllPurchase = async() => {
+    setIsLoading(true);
+    try {
+      const res = await $http.get("https://customer-purchase.onrender.com/api/orders/all-transactions", {
+        headers: {
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlN2EyZWVhLWI3MDgtNGQ5NS1hYjFhLTgxYjhjY2FkZmNiZCIsImlhdCI6MTY5NzEyMjA4NX0.e4fKa18WW2wL0lbUfJkvp2Jk9KP2YadUdAMx1VDGaZU"
+        }
+      });
+      setData(res?.data?.data)
+      setIsLoading(false);
+    } catch (error) {
+      setData([]);
+      setIsLoading(false);
+    }
+    setSearchInput("");
+  }
   
 
   // api search
@@ -217,7 +242,7 @@ const MyPage: React.FC = () => {
             className={`h-[2.8rem] w-[12.5rem] flex items-center justify-center border-b-2 border-solid ${
               filter === 'Successful' ? 'border-brand-green-primary' : 'border-white-100'
             }`}
-            onClick={() => handleFilterClick('Successful')}
+            onClick={() => handleFilterClick('Completed')}
           >
             <p
               className={`text-sm cursor-pointer lg:text-base ${

@@ -9,7 +9,7 @@ const MobileCustomerDashboard= ({ data }: { data: PurchaseData[] }) => {
   // Function to determine the background color based on status
   const getStatusBackgroundColor = (status: string): string[] => {
     switch (status.toLowerCase()) {
-      case 'successful':
+      case 'completed':
         return ['bg-custom-color41', 'text-custom-color35']; // Return an array of background and text colors
       case 'pending':
         return ['bg-custom-color40', 'text-yellow-600'];
