@@ -16,7 +16,8 @@ function Code2FALogic() {
   const auth = useAuth();
   const email = auth.email;
   const mutateFn = useAuthMutation(verfiy2FA,  {
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
+        
      if(data.response.data.status && data.response.data.status == "Error") {
       setDigits(['', '', '', '', '', '']);
       notify({
