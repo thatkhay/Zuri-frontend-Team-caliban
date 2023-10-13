@@ -29,6 +29,7 @@ function GoogleRedirect() {
       }
     };
     Oauth();
+    // eslint-disable-next-line
   }, []);
   return <div className="flex item-center justify-center mt-[2rem]">Please Wait...</div>;
 }

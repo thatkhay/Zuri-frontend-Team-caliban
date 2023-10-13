@@ -29,6 +29,7 @@ export default function Cart() {
         setIsLoading(false)
       }
       cartFetch()
+      // eslint-disable-next-line
   },[])
 
 

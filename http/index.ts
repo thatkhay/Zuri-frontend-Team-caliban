@@ -187,20 +187,20 @@ export const makePayment = async (selectedPaymentMethod: string) => {
   }
 };
 
-export const verfiy2FA = async (props: { email: string; token: string }) => {
-  const $http = axios.create({
-    baseURL: "https://auth.akuya.tech",
-    timeout: 30000,
-    headers: {
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-  });
+// export const verfiy2FA = async (props: { email: string; token: string }) => {
+//   const $http = axios.create({
+//     baseURL: "https://auth.akuya.tech",
+//     timeout: 30000,
+//     headers: {
+//       'Content-Type': 'application/json; charset=UTF-8',
+//     },
+//   });
 
-  try {
-    const res = await $http.post('/api/auth/2fa/verify-code', props);
-    return res;
-  } catch (e: any) {
-    console.log(e)
-  return e;
-  }
-};
+//   try {
+//     const res = await $http.post('/api/auth/2fa/verify-code', props);
+//     return res;
+//   } catch (e: any) {
+//     console.log(e)
+//   return e;
+//   }
+// };
