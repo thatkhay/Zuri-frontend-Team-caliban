@@ -46,17 +46,19 @@ const MyPage: React.FC = () => {
   // search state
   const [searchInput, setSearchInput] = useState<string>("");
 
-
+  const payload = {orderItemIds: checkedItems}
+  const stringifyData = JSON.stringify(payload)
 
   // function to handle delete
   const onDelete = async () => {
     try {
       const response = await fetch(`https://customer-purchase.onrender.com/api/orders/delete-transactions`, {
+        method: "DELETE",
         headers: {
           "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlN2EyZWVhLWI3MDgtNGQ5NS1hYjFhLTgxYjhjY2FkZmNiZCIsImlhdCI6MTY5NzEyMjA4NX0.e4fKa18WW2wL0lbUfJkvp2Jk9KP2YadUdAMx1VDGaZU",
-          // 'Content-Type': 'application/json'
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ orderItemIds: checkedItems })
+        body: stringifyData
       });
       const res = await response.json();
       console.log(res.data());
@@ -87,10 +89,6 @@ const MyPage: React.FC = () => {
       setCheckedItems([...checkedItems, orderID]);
     }
   };
-
-  console.log(checkedItems)
-
-  
 
   // Calculate counts for each category
   const allPurchasesCount = data.length;
