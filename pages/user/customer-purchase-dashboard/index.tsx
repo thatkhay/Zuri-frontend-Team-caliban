@@ -189,9 +189,9 @@ const MyPage: React.FC = () => {
     setSearchInput(e.target.value);
   }
 
-  const onBack = () => {
+  const onBack = async() => {
     // call purchase data here again
-    onClose();
+    await getAllPurchase();
   }
 
   return (
