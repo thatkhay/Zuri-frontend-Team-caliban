@@ -11,6 +11,7 @@ import MobileCustomerDashboard from '@modules/marketplace/component/CustomerDash
 import FilterDropDown from '@modules/marketplace/component/CustomerDashboard/FilterDropDown';
 import MainLayout from '../../../components/Layout/MainLayout';
 import $http from '../../../http/axios';
+import { toast } from 'react-toastify';
 
 // Define a type for the data
 export type PurchaseData = {
@@ -25,10 +26,7 @@ export type PurchaseData = {
     "promo_id": string | null,
     "createdAt": string,
     "updatedAt": string,
-    "merchant": {
-      "first_name": string,
-      "last_name": string
-    },
+    "merchant": string,
     "product": {
       "name": string
     },
@@ -36,54 +34,6 @@ export type PurchaseData = {
       "status": string
     }
 };
-const DUMMYDATA: PurchaseData[] = [
-  {
-    "id": 7,
-    "order_id": "04f49648-9664-4ffe-a876-91e816dfbd22",
-    "product_id": "f7c1a7f3-6a53-4c0c-8959-ecdd87fbf3e9",
-    "customer_id": "4e8f65c7-d21b-4a5e-98ab-2f2560973c34",
-    "merchant_id": "4e8f65c7-d21b-4a5e-98ab-2f2560973c34",
-    "order_price": "1000.00",
-    "order_VAT": "30.00",
-    "order_discount": "50",
-    "promo_id": null,
-    "createdAt": "2023-10-12T14:59:09.906Z",
-    "updatedAt": "2023-10-12T14:59:09.906Z",
-    "merchant": {
-      "first_name": "John",
-      "last_name": "Doe"
-    },
-    "product": {
-      "name": "Product 1"
-    },
-    "order": {
-      "status": "pending"
-    }
-  },
-  {
-    "id": 8,
-    "order_id": "04f49648-9664-4ffe-a876-91e816dfbd22",
-    "product_id": "f7c1a7f3-6a53-4c0c-8959-ecdd87fbf3e9",
-    "customer_id": "4e8f65c7-d21b-4a5e-98ab-2f2560973c34",
-    "merchant_id": "4e8f65c7-d21b-4a5e-98ab-2f2560973c34",
-    "order_price": "1000.00",
-    "order_VAT": "30.00",
-    "order_discount": "50",
-    "promo_id": null,
-    "createdAt": "2023-10-12T14:59:09.906Z",
-    "updatedAt": "2023-10-12T14:59:09.906Z",
-    "merchant": {
-      "first_name": "John",
-      "last_name": "Doe"
-    },
-    "product": {
-      "name": "Product 1"
-    },
-    "order": {
-      "status": "pending"
-    }
-  }
-]
 
 export type SearchFilter = "item" | "price"
 
@@ -92,14 +42,49 @@ const MyPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [filter, setFilter] = useState<string | null>(null);
   const [data, setData] = useState<PurchaseData[]>([])
+  const [checkedItems, setCheckedItems] = useState<number[]>([]);
   // search state
   const [searchInput, setSearchInput] = useState<string>("");
 
 
 
   // function to handle delete
-  const onDelete = () => {
-    onClose();
+  const onDelete = async () => {
+    try {
+      const response = await fetch(`https://customer-purchase.onrender.com/api/orders/delete-transactions`, {
+        headers: {
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlN2EyZWVhLWI3MDgtNGQ5NS1hYjFhLTgxYjhjY2FkZmNiZCIsImlhdCI6MTY5NzEyMjA4NX0.e4fKa18WW2wL0lbUfJkvp2Jk9KP2YadUdAMx1VDGaZU"
+        },
+        body: JSON.stringify({ "orderItemIds": checkedItems })
+      });
+      const res = await response.json();
+      console.log(res.data());
+      getAllPurchase();
+    } catch (err) {
+      toast.error('An Error occured while deleting', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
+    }
+  };
+
+  // const handle select for delete
+  const isSelected = (orderId: number) => checkedItems.includes(orderId);
+  const handleCheckboxChange = (orderID: number) => {
+    
+    if (isSelected(orderID)) {
+      // Item is already selected, remove it from the selected list
+      setCheckedItems(checkedItems.filter((id) => id !== orderID));
+    } else {
+      // Item is not selected, add it to the selected list
+      setCheckedItems([...checkedItems, orderID]);
+    }
   };
 
   
@@ -320,14 +305,15 @@ const MyPage: React.FC = () => {
                         <td className="text-[0.75rem] flex items-center mt-5">
                           <span className="px-4 ml-[1rem]">
                             {' '}
-                            <input type="checkbox" />
+                            <input type="checkbox" checked={checkedItems.includes(item.id)}
+                              onChange={() => handleCheckboxChange(item.id)} />
                           </span>
                           {item.product.name}
                         </td>
                         <td className="text-[0.75rem] px-4 py-2">{item.order_id}</td>
                         <td className="text-[0.75rem] px-4 py-2">{item.order_price}</td>
                         <td className="text-[0.75rem] px-4 py-2">{item.createdAt.split("T")[0]}</td>
-                        <td className="text-[0.75rem] px-4 py-2">{item.merchant.last_name} {item.merchant.first_name}</td>
+                        <td className="text-[0.75rem] px-4 py-2">{item.merchant}</td>
                         <td className="text-[0.75rem] px-4 py-2">
                           <span
                             className={`flex items-center justify-center h-[28px] w-[90px] rounded-xl ${
