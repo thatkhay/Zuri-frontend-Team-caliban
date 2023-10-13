@@ -53,9 +53,10 @@ const MyPage: React.FC = () => {
     try {
       const response = await fetch(`https://customer-purchase.onrender.com/api/orders/delete-transactions`, {
         headers: {
-          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlN2EyZWVhLWI3MDgtNGQ5NS1hYjFhLTgxYjhjY2FkZmNiZCIsImlhdCI6MTY5NzEyMjA4NX0.e4fKa18WW2wL0lbUfJkvp2Jk9KP2YadUdAMx1VDGaZU"
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlN2EyZWVhLWI3MDgtNGQ5NS1hYjFhLTgxYjhjY2FkZmNiZCIsImlhdCI6MTY5NzEyMjA4NX0.e4fKa18WW2wL0lbUfJkvp2Jk9KP2YadUdAMx1VDGaZU",
+          // 'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ "orderItemIds": checkedItems })
+        body: JSON.stringify({ orderItemIds: checkedItems })
       });
       const res = await response.json();
       console.log(res.data());
@@ -86,6 +87,8 @@ const MyPage: React.FC = () => {
       setCheckedItems([...checkedItems, orderID]);
     }
   };
+
+  console.log(checkedItems)
 
   
 
