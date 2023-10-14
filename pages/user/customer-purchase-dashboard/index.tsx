@@ -281,7 +281,7 @@ const MyPage: React.FC = () => {
               <Input
                 value={searchInput}
                 onChange={(e) => handleSearchInput(e)}
-                leftIcon={<SearchNormal1 color="black" />}
+                leftIcon={<SearchNormal1 color="gray" />}
                 className="border-2 border-solid border-white-200 pl-6 w-full h-[2.5rem] pr-[1rem] rounded flex-1"
                 placeholder={`Search by ${filterBy} or select a filter to search by`}
               />
