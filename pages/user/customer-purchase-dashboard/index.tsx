@@ -293,13 +293,6 @@ const MyPage: React.FC = () => {
             </form>
 
             <FilterDropDown onChooseFilter={onChooseFilter} />
-
-            <Button
-              onClick={onOpen}
-              className="h-[2.5rem] flex items-center justify-center border-2 border-solid border-white-200 w-max py-2 rounded text-red-306 bg-white-100 hover:bg-red-100 hover:border-bg-[#FDCDCD] hover:border-[#FDCDCD] active:border-[#FDCDCD] active:bg-[#FDCDCD] text-[0.88rem]"
-            >
-              <Trash size="16" /> <span className="hidden sm:block">Delete</span>
-            </Button>
           </div>
           {isLoading && <Spinner />}
           {/* table */}
