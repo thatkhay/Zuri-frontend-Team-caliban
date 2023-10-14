@@ -12,75 +12,95 @@ import FilterDropDown from '@modules/marketplace/component/CustomerDashboard/Fil
 import MainLayout from '../../../components/Layout/MainLayout';
 import $http from '../../../http/axios';
 import { toast } from 'react-toastify';
+import { error } from 'console';
+import Spinner from '@ui/Spinner';
 
 // Define a type for the data
 export type PurchaseData = {
-    "id": number,
-    "order_id": string,
-    "product_id": string,
-    "customer_id": string,
-    "merchant_id": string,
-    "order_price": string,
-    "order_VAT": string,
-    "order_discount": string,
-    "promo_id": string | null,
-    "createdAt": string,
-    "updatedAt": string,
-    "merchant": string,
-    "product": {
-      "name": string
-    },
-    "order": {
-      "status": string
-    }
+  id: number;
+  order_id: string;
+  product_id: string;
+  customer_id: string;
+  merchant_id: string;
+  order_price: string;
+  order_VAT: string;
+  order_discount: string;
+  promo_id: string | null;
+  createdAt: string;
+  updatedAt: string;
+  merchant: string;
+  product: {
+    name: string;
+  };
+  order: {
+    status: string;
+  };
 };
 
-export type SearchFilter = "item" | "price"
+export type SearchFilter = 'item' | 'price';
 
 const MyPage: React.FC = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [filter, setFilter] = useState<string | null>(null);
-  const [data, setData] = useState<PurchaseData[]>([])
+  const [data, setData] = useState<PurchaseData[]>([]);
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
   // search state
-  const [searchInput, setSearchInput] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>('');
 
-  const payload = {orderItemIds: checkedItems}
-  const stringifyData = JSON.stringify(payload)
+  const payload = { orderItemIds: checkedItems };
+  const stringifyData = JSON.stringify(payload);
 
   // function to handle delete
   const onDelete = async () => {
     try {
+      console.log('Deleting items...');
       const response = await fetch(`https://customer-purchase.onrender.com/api/orders/delete-transactions`, {
-        method: "DELETE",
+        method: 'DELETE',
         headers: {
-          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlN2EyZWVhLWI3MDgtNGQ5NS1hYjFhLTgxYjhjY2FkZmNiZCIsImlhdCI6MTY5NzEyMjA4NX0.e4fKa18WW2wL0lbUfJkvp2Jk9KP2YadUdAMx1VDGaZU",
-          'Content-Type': 'application/json'
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlN2EyZWVhLWI3MDgtNGQ5NS1hYjFhLTgxYjhjY2FkZmNiZCIsImlhdCI6MTY5NzEyMjA4NX0.e4fKa18WW2wL0lbUfJkvp2Jk9KP2YadUdAMx1VDGaZU',
+          'Content-Type': 'application/json',
         },
-        body: stringifyData
+        body: stringifyData,
       });
-      const res = await response.json();
-      console.log(res.data());
+
+      console.log('Delete API response:', response);
+
+      if (response.ok) {
+        toast.success('Deleted, Successfuly', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'light',
+        });
+        const res = await response.json();
+        console.log(res.data());
+        getAllPurchase();
+      }
       getAllPurchase();
     } catch (err) {
-      toast.error('An Error occured while deleting', {
-        position: "top-right",
+      console.log('Error:', err);
+      toast.error('An error occurred while deleting', {
+        position: 'top-right',
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: "light",
-        });
+        theme: 'light',
+      });
     }
   };
 
   // const handle select for delete
   const isSelected = (orderId: number) => checkedItems.includes(orderId);
   const handleCheckboxChange = (orderID: number) => {
-    
     if (isSelected(orderID)) {
       // Item is already selected, remove it from the selected list
       setCheckedItems(checkedItems.filter((id) => id !== orderID));
@@ -111,60 +131,60 @@ const MyPage: React.FC = () => {
   };
 
   useEffect(() => {
-      async function fetchData(){
-        await getAllPurchase();
-      }
+    async function fetchData() {
+      await getAllPurchase();
+    }
 
-      fetchData();
-  }, [])
-  
-  const getAllPurchase = async() => {
+    fetchData();
+  }, []);
+
+  const getAllPurchase = async () => {
     setIsLoading(true);
     try {
-      const res = await $http.get("https://customer-purchase.onrender.com/api/orders/all-transactions", {
+      const res = await $http.get('https://customer-purchase.onrender.com/api/orders/all-transactions', {
         headers: {
-          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlN2EyZWVhLWI3MDgtNGQ5NS1hYjFhLTgxYjhjY2FkZmNiZCIsImlhdCI6MTY5NzEyMjA4NX0.e4fKa18WW2wL0lbUfJkvp2Jk9KP2YadUdAMx1VDGaZU"
-        }
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlN2EyZWVhLWI3MDgtNGQ5NS1hYjFhLTgxYjhjY2FkZmNiZCIsImlhdCI6MTY5NzEyMjA4NX0.e4fKa18WW2wL0lbUfJkvp2Jk9KP2YadUdAMx1VDGaZU',
+        },
       });
-      setData(res?.data?.data)
+      setData(res?.data?.data);
       setIsLoading(false);
     } catch (error) {
       setData([]);
       setIsLoading(false);
     }
-    setSearchInput("");
-  }
-  
+    setSearchInput('');
+  };
 
   // api search
-  const onSearch = async(e: React.FormEvent<HTMLFormElement>) => {
+  const onSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     try {
       const res = await $http.get(getFilterApi(filterBy, searchInput), {
         headers: {
-          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlN2EyZWVhLWI3MDgtNGQ5NS1hYjFhLTgxYjhjY2FkZmNiZCIsImlhdCI6MTY5NzEyMjA4NX0.e4fKa18WW2wL0lbUfJkvp2Jk9KP2YadUdAMx1VDGaZU"
-        }
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlN2EyZWVhLWI3MDgtNGQ5NS1hYjFhLTgxYjhjY2FkZmNiZCIsImlhdCI6MTY5NzEyMjA4NX0.e4fKa18WW2wL0lbUfJkvp2Jk9KP2YadUdAMx1VDGaZU',
+        },
       });
-      setData(res?.data?.data)
+      setData(res?.data?.data);
       setIsLoading(false);
     } catch (error) {
       setData([]);
       setIsLoading(false);
     }
-    setSearchInput("");
-  }
+    setSearchInput('');
+  };
 
   const getFilterApi = (filterBy: string, filterParams: string) => {
-    return `https://customer-purchase.onrender.com/api/orders/filter-transactions?${filterBy}=${filterParams}`
-  }
+    return `https://customer-purchase.onrender.com/api/orders/filter-transactions?${filterBy}=${filterParams}`;
+  };
 
   // handle filter dropdown
   const [filterBy, setFilterBy] = useState<SearchFilter>('item');
   const onChooseFilter = (filter: SearchFilter) => {
     setFilterBy(filter);
   };
-
 
   // handle search and filter functionality
   const handleFilterClick = (filterName: string | null) => {
@@ -173,12 +193,12 @@ const MyPage: React.FC = () => {
 
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
-  }
+  };
 
-  const onBack = async() => {
+  const onBack = async () => {
     // call purchase data here again
     await getAllPurchase();
-  }
+  };
 
   return (
     <MainLayout showFooter showTopbar showDashboardSidebar={false} activePage="">
@@ -226,13 +246,13 @@ const MyPage: React.FC = () => {
           </div>
           <div
             className={`h-[2.8rem] w-[12.5rem] flex items-center justify-center border-b-2 border-solid ${
-              filter === 'Successful' ? 'border-brand-green-primary' : 'border-white-100'
+              filter === 'Completed' ? 'border-brand-green-primary' : 'border-white-100'
             }`}
             onClick={() => handleFilterClick('Completed')}
           >
             <p
               className={`text-sm cursor-pointer lg:text-base ${
-                filter === 'Successful' ? 'text-brand-green-primary' : 'border-white-100'
+                filter === 'Completed' ? 'text-brand-green-primary' : 'border-white-100'
               }`}
             >
               Completed Purchases ({completedPurchasesCount})
@@ -246,27 +266,26 @@ const MyPage: React.FC = () => {
           >
             <p
               className={`text-sm cursor-pointer lg:text-base ${
-                filter === 'Failed' ? 'text-brand-green-primary' : 'border-white-100'
+                filter === 'cancelled' ? 'text-brand-green-primary' : 'border-white-100'
               }`}
             >
               Cancelled Purchases ({failedPurchasesCount})
             </p>
           </div>
         </div>
-          
-          <div className="sm:border-r-4 sm:border-white-200  sm:border-solid w-full px-4 flex flex-col gap-8 sm:gap-0">
 
+        <div className="sm:border-r-4 sm:border-white-200  sm:border-solid w-full px-4 flex flex-col gap-8 sm:gap-0">
           {/* search - filter - delete section */}
-            <div className="flex items-center h-[2.5rem] gap-2 mt-[3rem] ">
-            <form className='w-full' onSubmit={(e) => onSearch(e)}>
-                <Input
-                  value={searchInput}
-                  onChange={(e) => handleSearchInput(e)}
-                  leftIcon={<SearchNormal1 color="#777" />}
-                  className="border-2 border-solid border-white-200 pl-6 w-full h-[2.5rem] pr-[1rem] rounded flex-1"
-                  placeholder={`Search by ${filterBy} or select a filter to search by`}
-                />
-              </form>
+          <div className="flex items-center h-[2.5rem] gap-2 mt-[3rem] ">
+            <form className="w-full" onSubmit={(e) => onSearch(e)}>
+              <Input
+                value={searchInput}
+                onChange={(e) => handleSearchInput(e)}
+                leftIcon={<SearchNormal1 color="#777" />}
+                className="border-2 border-solid border-white-200 pl-6 w-full h-[2.5rem] pr-[1rem] rounded flex-1"
+                placeholder={`Search by ${filterBy} or select a filter to search by`}
+              />
+            </form>
 
             <FilterDropDown onChooseFilter={onChooseFilter} />
 
@@ -277,8 +296,9 @@ const MyPage: React.FC = () => {
               <Trash size="16" /> <span className="hidden sm:block">Delete</span>
             </Button>
           </div>
-
+          {isLoading && <Spinner />}
           {/* table */}
+
           {data.length > 0 && (
             <div className="hidden sm:block w-full overflow-x-auto">
               <table className="w-max md:w-full mt-6 mb-8">
@@ -306,14 +326,17 @@ const MyPage: React.FC = () => {
                         <td className="text-[0.75rem] flex items-center mt-5">
                           <span className="px-4 ml-[1rem]">
                             {' '}
-                            <input type="checkbox" checked={checkedItems.includes(item.id)}
-                              onChange={() => handleCheckboxChange(item.id)} />
+                            <input
+                              type="checkbox"
+                              checked={checkedItems.includes(item.id)}
+                              onChange={() => handleCheckboxChange(item.id)}
+                            />
                           </span>
                           {item.product.name}
                         </td>
                         <td className="text-[0.75rem] px-4 py-2">{item.order_id}</td>
                         <td className="text-[0.75rem] px-4 py-2">{item.order_price}</td>
-                        <td className="text-[0.75rem] px-4 py-2">{item.createdAt.split("T")[0]}</td>
+                        <td className="text-[0.75rem] px-4 py-2">{item.createdAt.split('T')[0]}</td>
                         <td className="text-[0.75rem] px-4 py-2">{item.merchant}</td>
                         <td className="text-[0.75rem] px-4 py-2">
                           <span
@@ -334,8 +357,8 @@ const MyPage: React.FC = () => {
           )}
           {data.length > 0 && <MobileCustomerDashboard data={data} />}
           {/* error page */}
-          {data.length === 0 && <PurchaseNotFound back={onBack}/>}
-          </div>
+          {data.length === 0 && <PurchaseNotFound back={onBack} />}
+        </div>
         {/* delete modal */}
         <DeleteModal isOpen={isOpen} onClose={onClose} onDelete={onDelete} />
       </div>
