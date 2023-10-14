@@ -14,6 +14,7 @@ import $http from '../../../http/axios';
 import { toast } from 'react-toastify';
 import { error } from 'console';
 import Spinner from '@ui/Spinner';
+import Link from 'next/link';
 
 // Define a type for the data
 export type PurchaseData = {
@@ -205,11 +206,15 @@ const MyPage: React.FC = () => {
       <div className="px-5 sm:px-16 max-w-screen overflow-hidden">
         <div className="mt-9 mb-1 md:mb-12">
           <div className="flex items-center">
-            <p className="text-base text-brand-green-primary">Settings</p>
+            <Link href="/settings">
+              <p className="text-base text-brand-green-primary">Settings</p>
+            </Link>
             <span className="mx-[5px]">
               <ArrowRight2 size="16" color="green" />
             </span>
-            <p className="text-base text-gray-100">Dashboard</p>
+            <Link href="/dashboard">
+              <p className="text-base text-gray-100">Dashboard</p>
+            </Link>
           </div>
         </div>
         <h3 className="font-semibold text-3xl hidden sm:block">Customer Purchase Dashboard</h3>
